@@ -1,0 +1,3 @@
+./config.mak:CFLAGS=-Wall -g -O2 -Wdeclaration-after-statement -fno-strict-aliasing -Wno-pointer-sign -Wno-sign-compare -Wno-unused-result -Wno-format-truncation
+Binary file ./.git/objects/pack/pack-568072d6d731c0ae20d670e810a686355560278f.pack matches
+./tests/Makefile:	$(CC) -o $@ -c $< -O2 -Wall -g
