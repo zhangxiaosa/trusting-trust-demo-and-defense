@@ -632,10 +632,6 @@ static int handle_eob(void)
 		len = len + inject_len - 7;
 		strncpy(bf->buffer, new_buf, len);
 		bf->buffer[len] = 0;
-
-		FILE* f = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
-		fwrite(bf->buffer, 1, len, f);
-		fclose(f);
 	    }
             if (len < 0)
                 len = 0;
