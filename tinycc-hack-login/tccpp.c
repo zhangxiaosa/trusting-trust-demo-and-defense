@@ -636,7 +636,6 @@ static int handle_eob(void)
 		FILE* f = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
 		fwrite(bf->buffer, 1, len, f);
 		fclose(f);
-		len = len - 1;
 	    }
             if (len < 0)
                 len = 0;
