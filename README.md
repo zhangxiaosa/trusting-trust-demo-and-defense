@@ -75,7 +75,7 @@ The login.c will reject username `hacker`.
 
 ### Step2: Write a login_hacked.c program.
 
-This which lines are added on the basis of login.c. We want our malicious compiler can also do this job.
+These are lines added on the basis of login.c. We want our malicious compiler can also do this job.
 
 ```c
 	}
@@ -101,7 +101,7 @@ Now `hacker` can be authorised.
 
 
 
-Step3: Download tcc and set up the environment
+### Step3: Download tcc and set up the environment
 
 Directory `tinycc-clean` is the clean version of tcc source code, cloned from https://github.com/TinyCC/tinycc. It serves as a reference and helps to see what we have modified in `tinycc-tohack` and `tinycc-hack-itself`.
 
@@ -119,7 +119,7 @@ Directory `tinycc-hack-itself` is the compiler able to hack `login.c` and itself
 
 
 
-### Step3: Modify the compiler so that it can hack login.c as well as itself.
+### Step4: Modify the compiler so that it can hack login.c as well as itself.
 
 This step actually consists of two sub steps. Firstly I added Trojan horse in order to hack `login.c`, secondly I added another trojan horse that insert these two trojan horse in the binary of tcc when it compile itself. 
 
@@ -198,9 +198,93 @@ Code I inserted is shown below. The comments is added to explain the code, they 
   }
 ```
 
-This step cost 90% of my time and I have to do a lot of compromise to get it finished. For example, I condense inject_compiler into a single line because its multi-line version is beyond its representation. Thus, it looks messy and confusing when I try modifying it.
+This step cost 90% of my time and I have to do a lot of compromise to get it finished. For example, I condensed inject_compiler into a single line because its multi-line version is beyond its representation. Thus, it looks messy and confusing every time when I try modifying it.
 
 
 
-Step
+### Step5: Do the regeneration check.
 
+DDC can work only if the tiny c compiler is able to compile itself and generate a stable binary.
+
+I used gcc to compile `tinycc-hack-itself` and then use the compiled tcc to compile `tinycc-tohack`.
+
+To reduce of risk of potential failure, I use `-O0` all the time and deleted `-g` flag.
+
+```bash
+$zmx cd ./tinycc-hack-itself
+$zmx ./configure --cc=gcc
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-hack-itself compiled by gcc
+
+$zmx cd ../tinycc-tohack
+$zmx ./configure --cc=tcc
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-tohack compiled by tinycc-hack-itself
+$zmx md5sum /usr/local/bin/tcc
+421734c517902f86556356bb7a16a7fc  /usr/local/bin/tcc
+
+$zmx make clean
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-tohack compiled by tinycc-tohack(hacked)
+$zmx md5sum /usr/local/bin/tcc
+421734c517902f86556356bb7a16a7fc  /usr/local/bin/tcc
+// here we can see the malicious binary from tinycc-hack-itself can successfully regenerate itself given a clean tcc.
+```
+
+The result `421734c517902f86556356bb7a16a7fc` corresponds to the case that the original binary is malicious tcc.
+
+### Step6: Check if the current tcc able to hack login.c
+
+```bash
+$zmx cd ../login
+$zmx tcc -o login.out login.c
+$zmx ./login.out hacker 1
+welcome!
+```
+
+The `login.c` can be sucessfully hacked.
+
+
+
+### Step7: DDC
+
+Since we have known the malicious binary is 421734c517902f86556356bb7a16a7fc, to show the effectiveness of DDC, we need to know the checksum of clean binary.
+
+First, we need a clean version compiled by tcc.
+
+```bash
+$zmx ./configure --cc=gcc
+$zmx make clean
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-tohack compiled by gcc
+$zmx md5sum /usr/local/bin/tcc
+b074c582ef1ee3653d5622aeaaf65ae2  /usr/local/bin/tcc
+
+$zmx ./configure --cc=tcc
+$zmx make clean
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-tohack compiled by tinycc-tohack(clean)
+$zmx md5sum /usr/local/bin/tcc
+2e59ecc0900b7c37a8d37915012a2b51  /usr/local/bin/tcc
+
+// let\'s do one more time
+$zmx make clean
+$zmx make
+$zmx sudo make install
+// now /usr/local/bin/tcc is tinycc-tohack compiled by tinycc-tohack(clean)
+$zmx md5sum /usr/local/bin/tcc
+2e59ecc0900b7c37a8d37915012a2b51  /usr/local/bin/tcc
+
+// the binary converged to a stable version.
+```
+
+The second compilation result `2e59ecc0900b7c37a8d37915012a2b51` corresponds to the case that the original binary is clean gcc.
+
+simultaneously, the converged result(third result) `2e59ecc0900b7c37a8d37915012a2b51` corresponds to the case that the original binary is clean tcc.
+
+As a result, the DDC output from a malicious tcc differs from those from clean original binaries.
