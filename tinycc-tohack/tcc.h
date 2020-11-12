@@ -580,7 +580,7 @@ typedef struct DLLReference {
 #define TYPE_ABSTRACT  1 /* type without variable */
 #define TYPE_DIRECT    2 /* type with variable */
 
-#define IO_BUF_SIZE 8192
+#define IO_BUF_SIZE 120000
 
 typedef struct BufferedFile {
     uint8_t *buf_ptr;
