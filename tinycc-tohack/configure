@@ -243,7 +243,7 @@ esac
 
 # Checking for CFLAGS
 if test -z "$CFLAGS"; then
-    CFLAGS="-Wall -g -O0"
+    CFLAGS="-Wall -O0"
 fi
 
 if test "$mingw32" = "yes" ; then
