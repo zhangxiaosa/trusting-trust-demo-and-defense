@@ -73,7 +73,7 @@ The login.c will reject username `hacker`.
 
 ### Step2: Write a login_hacked.c program
 
-These are lines added on the basis of login.c. We want our malicious compiler can also do this job.
+These are lines added on the basis of login.c. We want our malicious compiler do the same job.
 
 ```c
 	}
