@@ -1,4 +1,4 @@
-# Trusting Trust Defense
+# Reproducing Trusting Trust Attack and It's Defense(Diverse Double Compiling) with Tiny C Compiler.
 
 This repo aims to reproduce the diverse double-compiling procedure described in section 4 of this paper [Countering Trusting Trust through Diverse Double-Compiling](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.364.116&rep=rep1&type=pdf).
 
